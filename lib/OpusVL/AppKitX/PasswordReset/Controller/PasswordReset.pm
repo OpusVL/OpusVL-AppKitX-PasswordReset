@@ -26,6 +26,13 @@ has reset_password_form => (
     lazy_build => 1,
 );
 
+has change_password_form => (
+    is => 'ro',
+    isa => 'Object',
+    builder => '_build_change_password_form',
+    lazy_build => 1,
+);
+
 has user_email_field => (
     is => 'ro',
     isa => 'Str',
@@ -42,6 +49,12 @@ has reset_password_form_class => (
     is => 'ro',
     isa => LoadableClass,
     default => 'OpusVL::AppKitX::PasswordReset::Form::PasswordReset',
+);
+
+has change_password_form_class => (
+    is => 'ro',
+    isa => LoadableClass,
+    default => 'OpusVL::AppKitX::PasswordReset::Form::PasswordChange',
 );
 
 sub _build_reset_password_form {
@@ -124,7 +137,7 @@ sub reset_password
         # This avoids sharing information about which email addresses are in
         # use.
         $c->stash->{status_msg} = "An email with a password reset link has been sent.";
-        return $c->redirect($c->uri);
+        return $c->redirect($c->req->uri);
     }
 
     $c->stash(
@@ -138,6 +151,27 @@ sub reset
     : Args(1)
 {
     my ($self, $c, $reset_hash) = @_;
+
+    my $user = $c->find_user({
+        password_reset_hash => $reset_hash,
+        password_reset_expiry => {
+            '>' => \'NOW()'
+        }
+    });
+
+    if ($user) {
+        my $form = $self->change_password_form;
+
+        if ($form->process(ctx => $c, params => scalar $c->req->parameters)) {
+            $user->password($form->value->{password});
+            $user->save();
+
+            $c->set_authenticated($user);
+
+            $c->stash->{status_msg} = "Your password has been updated successfully and you are now logged in.";
+            $c->res->redirect('/profile');
+        }
+    }
 }
 1;
 
