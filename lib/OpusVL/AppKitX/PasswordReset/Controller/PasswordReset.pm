@@ -5,8 +5,7 @@ use namespace::autoclean;
 BEGIN {extends 'CatalystX::SimpleLogin::Controller::Login';}
 with 'OpusVL::AppKit::RolesFor::Controller::GUI';
 
-use MooseX::Types::Moose qw/ClassName/;
-use OpusVL::AppKitX::PasswordReset::Form::PasswordReset;
+use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use DateTime;
 use Data::UUID;
 
@@ -23,7 +22,8 @@ __PACKAGE__->config
 has reset_password_form => (
     is => 'ro',
     isa => 'Object',
-    builder => '_build_reset_password_form'
+    builder => '_build_reset_password_form',
+    lazy_build => 1,
 );
 
 has user_email_field => (
@@ -40,7 +40,7 @@ has user_name_field => (
 
 has reset_password_form_class => (
     is => 'ro',
-    isa => ClassName,
+    isa => LoadableClass,
     default => 'OpusVL::AppKitX::PasswordReset::Form::PasswordReset',
 );
 
