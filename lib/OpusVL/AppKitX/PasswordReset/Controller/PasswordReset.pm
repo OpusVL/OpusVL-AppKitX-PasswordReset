@@ -177,8 +177,8 @@ sub reset
     my $reset_hash = delete $query->{h};
 
     # FIXME : This doesn't seem to work in the CMS
-    $c->detach('/not_found') if not $reset_hash;
-    $c->detach('/not_found') if %$query;
+    $c->go('/not_found') if not $reset_hash;
+    $c->go('/not_found') if %$query;
 
     my $user = $c->find_user({
         password_reset_hash => $reset_hash,
@@ -187,7 +187,7 @@ sub reset
         }
     });
 
-    $c->detach('/not_found') if not $user;
+    $c->go('/not_found') if not $user;
 
     my $form = $self->change_password_form;
 
