@@ -193,7 +193,9 @@ sub reset
 
     if ($form->process(ctx => $c, params => scalar $c->req->body_params)) {
         $user->update({
-            password => $form->value->{password}
+            password => $form->value->{password},
+            password_reset_hash => undef,
+            password_reset_expiry => undef,
         });
         $user->save();
 
