@@ -6,6 +6,6 @@ Code4Health website.
 If you initiated this request, please follow the link below to continue the
 password reset process:
 
-[% c.uri_for(c.controller.action_for('reset'), [ password_reset_hash ]) %]
+[% c.uri_for(c.controller.action_for('reset'), { h => password_reset_hash }) %]
 
 If you didn't initiate this request, you can freely ignore the email.

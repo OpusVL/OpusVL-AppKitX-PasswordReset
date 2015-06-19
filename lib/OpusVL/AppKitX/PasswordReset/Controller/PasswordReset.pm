@@ -8,6 +8,7 @@ with 'OpusVL::AppKit::RolesFor::Controller::GUI';
 use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use DateTime;
 use Data::UUID;
+use Digest::SHA1 qw/sha1_hex/;
 
 __PACKAGE__->config
 (
@@ -31,6 +32,12 @@ has change_password_form => (
     isa => 'Object',
     builder => '_build_change_password_form',
     lazy_build => 1,
+);
+
+has user_username_field => (
+    is => 'ro',
+    isa => 'Str',
+    default => 'username',
 );
 
 has user_email_field => (
@@ -102,7 +109,7 @@ sub reset_password
 
     if ($form->process(ctx => $c, params => scalar $c->req->parameters)) {
         my $user = $c->find_user({
-            $self->user_name_field => $form->value->{username}
+            $self->user_username_field => $form->value->{username}
         });
 
         if ($user) {
@@ -113,15 +120,22 @@ sub reset_password
 
             # TODO: Parameterise duration
             my $expires_at = DateTime->now->add(days => 3);
-            $c->user->update({
+            $user->update({
                 password_reset_hash => $reset_hash,
                 password_reset_expiry => $expires_at,
             });
             $c->stash->{password_reset_hash} = $reset_hash;
-            $c->stash->{user_name} = $c->user->${\ $self->user_name_field };
+            $c->stash->{user_name} = $user->${\ $self->user_name_field };
 
+            $c->stash->{no_wrapper} = 1;
             $c->stash->{template} = 'modules/passwordreset/email.tt';
-            my $email_body = $c->forward($c->view('AppKitTT'));
+            $c->forward($c->view('AppKitTT'));
+            my $email_body = $c->res->body;
+
+            ## TT view tends to leave a bunch of newlines
+            $email_body =~ s/(?:^\s*$)+//m;
+
+            $c->log->debug($email_body);
 
             $c->stash->{email} = {
                 to => $email,
@@ -133,11 +147,17 @@ sub reset_password
             $c->forward($c->view('Email'));
         }
 
+
         # Confirm the request whether or not it was a valid address.
         # This avoids sharing information about which email addresses are in
         # use.
-        $c->stash->{status_msg} = "An email with a password reset link has been sent.";
-        return $c->redirect($c->req->uri);
+        if (@{ $c->error }) {
+            $c->flash->{error_msg} = "Email failed to send";
+        }
+        else {
+            $c->flash->{status_msg} = "An email with a password reset link has been sent."
+        }
+        return $c->res->redirect($c->req->uri);
     }
 
     $c->stash(
@@ -148,9 +168,17 @@ sub reset_password
 sub reset
     : Chained('not_required')
     : PathPart('reset')
-    : Args(1)
+    : Args(0)
+    : Public
 {
-    my ($self, $c, $reset_hash) = @_;
+    my ($self, $c) = @_;
+
+    my $query = $c->req->query_params;
+    my $reset_hash = delete $query->{h};
+
+    # FIXME : This doesn't seem to work in the CMS
+    $c->detach('/not_found') if not $reset_hash;
+    $c->detach('/not_found') if %$query;
 
     my $user = $c->find_user({
         password_reset_hash => $reset_hash,
@@ -159,19 +187,25 @@ sub reset
         }
     });
 
-    if ($user) {
-        my $form = $self->change_password_form;
+    $c->detach('/not_found') if not $user;
 
-        if ($form->process(ctx => $c, params => scalar $c->req->parameters)) {
-            $user->password($form->value->{password});
-            $user->save();
+    my $form = $self->change_password_form;
 
-            $c->set_authenticated($user);
+    if ($form->process(ctx => $c, params => scalar $c->req->body_params)) {
+        $user->update({
+            password => $form->value->{password}
+        });
+        $user->save();
 
-            $c->stash->{status_msg} = "Your password has been updated successfully and you are now logged in.";
-            $c->res->redirect('/profile');
-        }
+        $c->set_authenticated($user);
+
+        $c->stash->{status_msg} = "Your password has been updated successfully and you are now logged in.";
+        $c->res->redirect('/profile');
     }
+
+    $c->stash(
+        render_form => $form->render
+    );
 }
 1;
 
