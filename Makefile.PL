@@ -10,6 +10,15 @@ all_from 'lib/OpusVL/AppKitX/PasswordReset.pm';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'OpusVL::AppKit';
+requires 'HTML::FormHandler';
+requires 'Catalyst::Model::DBIC::Schema';
+requires 'MooseX::Types::LoadableClass';
+requires 'DateTime';
+requires 'Data::UUID';
+requires 'Digest::SHA1';
+requires 'Moose::Role';
+requires 'CatalystX::InjectComponent';
+requires 'File::ShareDir';
 
 build_requires 'Catalyst::Runtime' => '5.80015';
 build_requires 'Test::WWW::Mechanize::Catalyst';
