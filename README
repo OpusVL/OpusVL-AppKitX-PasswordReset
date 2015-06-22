@@ -1,0 +1,25 @@
+NAME
+    OpusVL::AppKitX::PasswordReset - Provides a password reset URL, with
+    defaults
+
+DESCRIPTION
+    Either:
+
+    Add "+OpusVL::AppKitX::PasswordReset" to your Builder to use the
+    defaults
+    Extend "OpusVL::AppKitX::PasswordReset::Controller::PasswordReset" to
+    alter the defaults.
+
+    The aforementioned controller extends from
+    CatalystX::SimpleLogin::Controller::Login, so you can replace your login
+    controller with one of these.
+
+AUTHOR
+    Alastair McGowan-Douglas
+
+COPYRIGHT and LICENSE
+    Copyright (C) 2015 OpusVL
+
+    This software is licensed according to the "IP Assignment Schedule"
+    provided with the development project.
+
