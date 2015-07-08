@@ -12,7 +12,6 @@ override _build_plugins => sub {
     my $plugins = super(); # Get what CatalystX::AppBuilder gives you
 
     push @$plugins, qw(
-        +OpusVL::AppKitX::PasswordReset
     );
 
     return $plugins;
