@@ -29,19 +29,18 @@ OpusVL::AppKitX::PasswordReset - Provides a password reset URL, with defaults
 
 =head1 DESCRIPTION
 
-Either:
+Create a Login controller that extends
+C<OpusVL::AppKitX::PasswordReset::Controller::PasswordReset>.
 
-=over
+This extends from L<CatalystX::SimpleLogin::Controller::Login>, so you can
+replace your login controller with one of these.
 
-=item Add C<+OpusVL::AppKitX::PasswordReset> to your Builder to use the defaults
+You can't use C<+OpusVL::AppKitX::PasswordReset> in your Builder, because this creates inaccessible paths.
 
-=item Extend C<OpusVL::AppKitX::PasswordReset::Controller::PasswordReset> to alter the defaults.
-
-=back
-
-The aforementioned controller extends from
-L<CatalystX::SimpleLogin::Controller::Login>, so you can replace your login
-controller with one of these.
+AppKit itself allows full access to C</login/*>; if you use this module as a
+Catalyst plugin, your paths become C</modules/passwordreset/*>. This means that
+you get a redirect loop when AppKit denies access to
+C</modules/passwordreset/not_required>.
 
 =head1 AUTHOR
 
