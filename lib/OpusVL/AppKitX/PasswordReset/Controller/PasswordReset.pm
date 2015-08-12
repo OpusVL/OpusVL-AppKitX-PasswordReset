@@ -9,6 +9,7 @@ use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use DateTime;
 use Data::UUID;
 use Digest::SHA1 qw/sha1_hex/;
+use Crypt::URandom;
 
 __PACKAGE__->config
 (
@@ -116,7 +117,7 @@ sub reset_password
             my $uuid = Data::UUID->new->create_str;
             my $email = $user->${\ $self->user_email_field };
 
-            my $reset_hash = sha1_hex($email . $uuid);
+            my $reset_hash = sha1_hex($email . $uuid . Crypt::URandom::urandom(50));
 
             # TODO: Parameterise duration
             my $expires_at = DateTime->now->add(days => 3);

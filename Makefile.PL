@@ -19,6 +19,7 @@ requires 'Digest::SHA1';
 requires 'Moose::Role';
 requires 'CatalystX::InjectComponent';
 requires 'File::ShareDir';
+requires 'Crypt::URandom';
 
 build_requires 'Catalyst::Runtime' => '5.80015';
 build_requires 'Test::WWW::Mechanize::Catalyst';
