@@ -6,6 +6,7 @@ use Module::Install::AuthorTests;
 
 name 'OpusVL-AppKitX-PasswordReset';
 all_from 'lib/OpusVL/AppKitX/PasswordReset.pm';
+license  'perl';
 
 requires 'Moose';
 requires 'namespace::autoclean';
