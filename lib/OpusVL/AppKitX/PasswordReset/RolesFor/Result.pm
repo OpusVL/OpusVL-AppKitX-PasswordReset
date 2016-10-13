@@ -41,3 +41,9 @@ result class. Also adds the C<InflateColumn::DateTime> component.
 
 Apply it to the user class you've configured Catalyst to use. Alternatively, add
 the information manually.
+
+=head1 METHODS
+
+=head2 passwordreset_init
+
+Called from package context, installs our columns into a Result class.

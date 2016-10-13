@@ -32,3 +32,24 @@ sub validate_confirm_password {
 
 1;
 
+=head1 NAME
+
+OpusVL::AppKitX::PasswordReset::Form::PasswordChange - Change Password form
+
+=head1 DESCRIPTION
+
+Use this in your controller to display the change password form.
+
+=head1 FIELDS
+
+=head2 password
+
+=head2 confirm_password
+
+Two password inputs are displayed. They are automatically validated.
+
+=head1 METHODS
+
+=head2 validate_confirm_password
+
+Ensures C<confirm_password> matches C<password> when the form is submitted.

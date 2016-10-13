@@ -220,7 +220,19 @@ OpusVL::AppKitX::PasswordReset::Controller:PasswordReset - Password reset contro
 
 =head1 DESCRIPTION
 
+Adds C</reset_password> and C</reset> paths.
+
 =head1 METHODS
+
+=head2 reset_password
+
+Shows the Reset Password form,
+L<OpusVL::AppKitX::PasswordReset::Form::PasswordReset>.
+
+=head2 reset
+
+Accepts a password reset hash as emailed by C<reset_password> and shows the
+Change Password form, L<OpusVL::AppKitX::PasswordReset::Form::PasswordChange>
 
 =head1 BUGS
 
