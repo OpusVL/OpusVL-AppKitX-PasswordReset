@@ -1,0 +1,8 @@
+Changes for OpusVL::AppKitX::PasswordReset
+
+{{ $NEXT }}
+
+0.04      2016-10-13 12:00:25+01:00 Europe/London
+
+  - Converted to dzil
+  - Fixed test database
